@@ -1,0 +1,15 @@
+DIMENSION           28
+BB_EXE              "$julia ../../../src/RUN_MINI_PRIAD.jl ../example_ARGS.txt"
+
+BB_OUTPUT_TYPE      CNT_EVAL OBJ PB PB PB PB PB PB PB PB PB
+BB_INPUT_TYPE       (I  R   I  R    R   I  R   I  R   I  R   I  R   I  R   I  R   I  R   I  R   I  R   I  R   I  R    R)
+LOWER_BOUND         (1 0.10 1 0.10 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 1 0.10 0.10)
+X0                  (2 1.00 3 7.00 6.00 6 2.00 2 9.00 2 4.00 2 2.00 2 3.00 4 5.00 3 2.00 3 4.00 2 2.00 3 4.00 3 3.00 2.00)
+UPPER_BOUND         (9 10.0 9 10.0 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 9 10.0 10.0)
+SEED	    	    0
+
+display_stats       bbe { success_type } [bbo] gen_step
+display_all_eval    yes
+history_file        history.txt
+
+MAX_BB_EVAL         5000

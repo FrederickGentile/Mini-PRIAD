@@ -1,0 +1,30 @@
+#####################################################################################################################
+# This is an example of what your ARGS.txt file should look like. In the ARGS.txt file, all lines that beggins      #
+# whit an "#" is a commented line. If there is an argument that you do not want to iitialize and let the program    #
+# chose a default value, you can eighter comment the line or earase it completly. To initialize an argument,        #
+# you need to write down the name of the argument to initialize and on the right of the name the value, with a      #
+# space " " between the name and the value. Here is a description for each argument of what the value given should  #
+# look like:                                                                                                        #
+# - fidelity: you must give fidelity a reel number between 0 and 1 excluding 0                                      #
+# - seed: you must give seed a positive integer number including 0                                                  #
+# - instance: you must give instance an integer, if it corespond to 1, 2 or 3 it will use the predefined instance,  #
+# otherwise it will use the customize instance that the user can editate in the Param.jl file                       #
+# - loggingTime: you may give a boolean answer like 0, 1, false or true to activate or desactivate the loggingTime  #
+# function that create a file in the $Mini_PRIAD_HOME directory or direcly spesify the directory where you want to  #
+# create the timeLog.txt file, you can even force a name to the .txt file (see the diferent example in the          #
+# commented line below)                                                                                             #
+# - continueEval: you must give two argument to this argument for it to work, the directory of the .jl file         #
+# containing the customize continueEval julia function and the name of the customized Julia function                #
+#####################################################################################################################
+
+fidelity 1.0
+
+seed 0
+
+instance 2
+
+loggingTime false
+# loggingTime ../result/loggingTime(2).txt
+# loggingTime ../result
+
+continueEval ../src/Main.jl basicContinueEval
