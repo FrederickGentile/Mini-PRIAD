@@ -120,12 +120,12 @@ The "splitUnavailSimulator" function is the function that run the MC trials, the
     continueEval is a function that can be anything, the user can chose what it does, but it decides wether you continue or not this iteration the BB at this point,
     timer represent he time used for running the simulation since the beggening of the iteration,
     clk is the result of time() function at the last call of continueEval,
-    C1_2_3_4_8_9multiplier is a multiplier that control the constraint for the different input length,
+    C1_2_3_4_6_7_8_9multiplier is a multiplier that control the constraint for the different input length,
     param represent the instance number,
     nbVec is the result of the function nbParam.
 it return a value of FFCT (flag, function, constraint, timer) object after the MC trials if it was not interupted befor calculating the cost and the constraints linked to the cost.    
 =#
-function splitUnavailSimulator(nbEval::Int64, nbEquipments::Int64, nbStation::Int64, stations, FFC::Vector{Float64}, ϕ::Float64, costDivider::Int64, continueEval::Function, timer, clk, C1_2_3_4_8_9multiplier::Float64, param::Int64, nbVec)
+function splitUnavailSimulator(nbEval::Int64, nbEquipments::Int64, nbStation::Int64, stations, FFC::Vector{Float64}, ϕ::Float64, costDivider::Int64, continueEval::Function, timer, clk, C1_2_3_4_6_7_8_9multiplier::Float64, param::Int64, nbVec)
     ϕBefore = round(costDivider/10000, sigdigits = 4)
     nbHoursInAYear = 365.25 * 24
     allui = []
@@ -184,7 +184,7 @@ function splitUnavailSimulator(nbEval::Int64, nbEquipments::Int64, nbStation::In
                         if rand() <= f.DegradationProbability
                             first = y + rand()
                             ###### C7 #######
-                            FFC[9] += GetFailureRequiredTime(f, param)/nbEquipments * 10
+                            FFC[9] += GetFailureRequiredTime(f, param)/nbEquipments * 12.6 * C1_2_3_4_6_7_8_9multiplier^0.121
                             #################
                             I = Interval(first, first + GetFailureRequiredTime(f, param)/nbHoursInAYear)
                             push!(unavailIntervalsForFailures[e], I)
@@ -206,7 +206,7 @@ function splitUnavailSimulator(nbEval::Int64, nbEquipments::Int64, nbStation::In
             end
         end
     end
-    FFC[8] += nbHoursInAYear * C6/nbEquipments * 6
+    FFC[8] += nbHoursInAYear * C6/nbEquipments * 6.2 * C1_2_3_4_6_7_8_9multiplier^0.138
     ####################
 
     ########## intermediate return ############
@@ -242,8 +242,8 @@ function splitUnavailSimulator(nbEval::Int64, nbEquipments::Int64, nbStation::In
     for ui in allui
          CCC = electricSimulator(stations, ui, nbStation, param, nbVec)
          FFC[2] += CCC[1]
-         FFC[10] += CCC[2] * C1_2_3_4_8_9multiplier^0.75
-         FFC[11] += CCC[3] * C1_2_3_4_8_9multiplier
+         FFC[10] += CCC[2] * C1_2_3_4_6_7_8_9multiplier^0.689
+         FFC[11] += CCC[3] * C1_2_3_4_6_7_8_9multiplier^0.858
     end
     FFCT = Vector{Float64}(undef, 13)
     FFCT[1:11] = FFC
@@ -258,7 +258,7 @@ The "UnavailSimulator" function is the function that call the splitUnavailSimula
     the splitUnavailSimulator function.
 This function is the one that return the value of FFCT to the Main function MiniPRIAD
 =#
-function UnavailSimulator(FFC::Vector{Float64}, stations::Vector{Station}, ϕ::Float64, x, seedMC::Int64, continueEval::Function, timer, clk, C1_2_3_4_8_9multiplier::Float64, param::Int64, nbVec)
+function UnavailSimulator(FFC::Vector{Float64}, stations::Vector{Station}, ϕ::Float64, x, seedMC::Int64, continueEval::Function, timer, clk, C1_2_3_4_6_7_8_9multiplier::Float64, param::Int64, nbVec)
     nbEquipments = nbVec[18]
     if x[1] == Inf64
         nbStation = sum(nbVec[8:10])
@@ -272,7 +272,7 @@ function UnavailSimulator(FFC::Vector{Float64}, stations::Vector{Station}, ϕ::F
 
     FFC[2] = 0.0
     FFC[8:11] = [0.0, 0.0, 0.0, 0.0]
-    FFCT = splitUnavailSimulator(1, nbEquipments, nbStation, stations, FFC, 1/10000, 1, continueEval, timer, clk, C1_2_3_4_8_9multiplier, param, nbVec)
+    FFCT = splitUnavailSimulator(1, nbEquipments, nbStation, stations, FFC, 1/10000, 1, continueEval, timer, clk, C1_2_3_4_6_7_8_9multiplier, param, nbVec)
     if FFCT[13] == Inf64
         return FFCT[1:12]
     end
@@ -290,12 +290,12 @@ function UnavailSimulator(FFC::Vector{Float64}, stations::Vector{Station}, ϕ::F
         for r in 1:(nbReturn - 1)
 
             if r == 1
-                FFCT = splitUnavailSimulator(999, nbEquipments, nbStation, stations, FFC, r/10, 1, continueEval, timer, clk, C1_2_3_4_8_9multiplier, param, nbVec)
+                FFCT = splitUnavailSimulator(999, nbEquipments, nbStation, stations, FFC, r/10, 1, continueEval, timer, clk, C1_2_3_4_6_7_8_9multiplier, param, nbVec)
                 if FFCT[13] == Inf64
                     return FFCT[1:12]
                 end
             else
-                FFCT = splitUnavailSimulator(1000, nbEquipments, nbStation, stations, FFC, r/10, Int(1000 * (r - 1)), continueEval, timer, clk, C1_2_3_4_8_9multiplier, param, nbVec)
+                FFCT = splitUnavailSimulator(1000, nbEquipments, nbStation, stations, FFC, r/10, Int(1000 * (r - 1)), continueEval, timer, clk, C1_2_3_4_6_7_8_9multiplier, param, nbVec)
                 if FFCT[13] == Inf64
                     return FFCT[1:12]
                 end
@@ -313,7 +313,7 @@ function UnavailSimulator(FFC::Vector{Float64}, stations::Vector{Station}, ϕ::F
         end
     end
     if Int(nbEval - 1000 * (nbReturn - 1)) - 1 != 0
-        FFCT = splitUnavailSimulator(Int(nbEval - 1000 * (nbReturn - 1)) - 1, nbEquipments, nbStation, stations, FFC, ϕ, Int(1000 * (nbReturn - 1)),  continueEval, timer, clk, C1_2_3_4_8_9multiplier, param, nbVec)
+        FFCT = splitUnavailSimulator(Int(nbEval - 1000 * (nbReturn - 1)) - 1, nbEquipments, nbStation, stations, FFC, ϕ, Int(1000 * (nbReturn - 1)),  continueEval, timer, clk, C1_2_3_4_6_7_8_9multiplier, param, nbVec)
         if FFCT[13] == Inf64
             return FFCT[1:12]
         end

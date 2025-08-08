@@ -123,7 +123,7 @@ for 28 inputs : for 15 inputs : for 13 inputs :
      X[28]    :     X[15]     :     X[13]     : Float64 : maintenance periodicity                                                                         : for LV cables              : of the LV transporting lines           : for the failure mecanism of the copper theft        
 ###########################################################################################################################
 ######################################################## Output ###########################################################
-The "FFC" is  string that repressent a vector of the deffined as that : [count_eval, f, C1, C2,...,Cm], the string formating does not include the brackets nor the coma, it's the needed formating for NOMAD, each element of the cetor is deffined as follow : 
+The "FFC" is  string that repressent a vector, it is deffined as that : [count_eval, f, C1, C2,...,C9], the string formating does not include the brackets nor the coma, it's the needed formating for NOMAD, each element of the cetor is deffined as follow : 
     FFC[1]  : count_eval : is a flag that indicat if the solver need to count this evaluation, in the case where an a priori constraints is violated, the eval is not couted ant this flag take the value 0 and the black box evaluation is stoped.
     FFC[2]  : f          : is the objective function value that represent the monatary cost caused by the choice of "x"
     FFC[3]  : C1         : is an analitical a priori constraint that control the number of maintenance over the 40 years
@@ -141,21 +141,29 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
     timer = 0.0
     clk = time()
 
+    if typeof(input) == String
+        input = split(input)
+        input = parse.(Float64, input)
+    end
+
     FFC = [Inf for i in 1:11]
     x = Vector{Float64}(undef, 28)
 
     if length(input) == 28
         checkInput(input)
         x = input 
-        C1_2_3_4_8_9multiplier = 1.0
+        C1_2_3_4_6_7_8_9multiplier = 1.0
     elseif length(input) == 15
         checkInput(input)
         x = [2, input[1], 2, input[2], input[3], 2, input[4], 2, input[5], 2, input[6], 2, input[7], 2, input[8], 2, input[9], 2, input[10], 2, input[11], 2, input[12], 2, input[13], 2, input[14], input[15]]
-        C1_2_3_4_8_9multiplier = 1.0
+        C1_2_3_4_6_7_8_9multiplier = 1.0
     elseif length(input) == 13
         checkInput(input)
         x = [Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, Inf64, input[1], input[2], input[3], input[4], input[5], input[6], input[7], input[8], input[9], input[10], input[11], input[12], input[13]]
-        C1_2_3_4_8_9multiplier = 28/13
+        C1_2_3_4_6_7_8_9multiplier = 28/13
+    else
+        @error "The input vector must be of length 28, 15 or 13"
+        return nothing
     end
 
     nbVec = nbParam(param)
@@ -165,15 +173,15 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
 ####### C1 and C2 ########
     FFC[3:4] = [-500, -500]
     for i in 1:28
-        FFC[3] += C1_2_3_4_8_9multiplier * 40/(T[i]) * 1.4
-        FFC[4] += C1_2_3_4_8_9multiplier * requiredTimeForMaintenances[i] * 40/T[i] * 0.7
+        FFC[3] += C1_2_3_4_6_7_8_9multiplier * 40/(T[i]) * 1.4
+        FFC[4] += C1_2_3_4_6_7_8_9multiplier * requiredTimeForMaintenances[i] * 40/T[i] * 0.715
     end
     
-    if (FFC[3] > 0 || FFC[4] > 0)
+    if (FFC[3] > 0 || FFC[4] > 0) || ϕ == 0.0
         FFC[1] = 0.0
         
         #uncomment the one you need
-        return FFC             # return a vector [count_eval, f, [C]]
+        #return FFC             # return a vector [count_eval, f, [C]]
         str = join(FFC, " ")
         return str             # return the same vector but as a string without "[", "]" or "," (used for NOMAD solver)
     end
@@ -187,22 +195,30 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
     FFC[5:6] = [-500, -500]
     for i in 1:28
         if failureList[i].DegradationProbability != Inf64
-            FFC[5] += C1_2_3_4_8_9multiplier * failureList[i].DegradationProbability * 175
+            FFC[5] += C1_2_3_4_6_7_8_9multiplier^0.728 * failureList[i].DegradationProbability * 225
         end
     end
 
     for i in 1:28
         if failureList[i].DegradationProbability == Inf64
         elseif failureList[i].DegradationProbability > 0.1
-            FFC[6] += C1_2_3_4_8_9multiplier^0.75 * (failureList[i].DegradationProbability)^0.25 * 65
+            FFC[6] += C1_2_3_4_6_7_8_9multiplier^0.5 * (failureList[i].DegradationProbability)^0.25 * 72.8
         elseif failureList[i].DegradationProbability > 0.05
-            FFC[6] += C1_2_3_4_8_9multiplier^0.75 * (failureList[i].DegradationProbability)^0.5 * 60
+            FFC[6] += C1_2_3_4_6_7_8_9multiplier^0.5 * (failureList[i].DegradationProbability)^0.5 * 67.6
         else
-            FFC[6] += C1_2_3_4_8_9multiplier^0.75 * failureList[i].DegradationProbability * 55
+            FFC[6] += C1_2_3_4_6_7_8_9multiplier^0.5 * failureList[i].DegradationProbability * 62.4
         end
     end
 #########################
 
+    if ϕ < 10^(-6)
+        #uncomment the one you need
+        #return FFC             # return a vector [count_eval, f, [C]]
+        str = join(FFC, " ")
+        return str             # return the same vector but as a string without "[", "]" or "," (used for NOMAD solver)
+
+
+    end
 
     timer = time() - clk
     ϕVec = [10^(-6) for i in 1:10]
@@ -210,7 +226,7 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
         logTime(timer, loggingTime)
 
         #uncomment the one you need
-        return FFC             # return a vector [count_eval, f, [C]]
+        #return FFC             # return a vector [count_eval, f, [C]]
         str = join(FFC, " ")
         return str             # return the same vector but as a string without "[", "]" or "," (used for NOMAD solver)
     end
@@ -236,14 +252,14 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
     end
 ####################                
 
-    FFCT = UnavailSimulator(FFC, stations, ϕ, x, seedMC, continueEval, timer, clk, C1_2_3_4_8_9multiplier, param, nbVec)
+    FFCT = UnavailSimulator(FFC, stations, ϕ, x, seedMC, continueEval, timer, clk, C1_2_3_4_6_7_8_9multiplier, param, nbVec)
 
     FFC = FFCT[1:11]
     timer = FFCT[12]           
     logTime(timer, loggingTime)
 
     #uncomment the one you need
-    return FFC             # return a vector [count_eval, f, [C]]
+    #return FFC             # return a vector [count_eval, f, [C]]
     str = join(FFC, " ")
     return str              # return the same vector but as a string without "[", "]" or "," (used for NOMAD solver)
 end

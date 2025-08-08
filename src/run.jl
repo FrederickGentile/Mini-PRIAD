@@ -1,5 +1,8 @@
 include("MiniPRIAD.jl")
 
+function print_rgb(r, g, b, t)
+    print("\e[1m\e[38;2;$r;$g;$b;249m",t)
+end
 
 #########################################################################################################################
 #===================== arguments to modify if you chose to call the blackbox with only a x.txt file ====================#
@@ -94,9 +97,9 @@ else
     print(" \n \nTo run a simulation, there are three options. you can eighter : \n
 \t- type `\$MiniPRIAD_HOME/src/run.jl ARGS.txt x.txt` where the `ARGS.txt` contains the necessary information to call the blackbox or \n
 \t- type `\$MiniPRIAD_HOME/src/run.jl x.txt` where the necessary information to call the blackbox is in comment box in green in the `run.jl` file or \n
-\t- call the MiniPRIAD Julia function direcly in a Julia sript if your solver is defined in Julia (don't forget to include \"MiniPRIAD.jl\"). \n
+\t- call the MiniPRIAD Julia function direcly in a Julia sript if your solver is defined in julia (don't forget to include \"MiniPRIAD.jl\"). \n
 \n
-The `ARGS.txt` file contains the same informations that you would need to define in Julia if you chose to second or third execution option. It contains the folowing arguments and formated like in the `ex_ARGS.txt` files located in each folder in `\$MiniPRIAD_HOME/Tests` : \n
+The `ARGS.txt` file contains the same informations that you would need to define in the comment box in julia if you chose the second or third execution option. It contains the folowing arguments and formated like in the `ex_ARGS.txt` files located in each folder in `\$MiniPRIAD_HOME/Tests` : \n
 \t- fidelity: It is a reel number bounded by 0 and 1, 0 excluded that represent the output fidelity to the reality. \n
 \t- seed: It is a integer number that represent the random seed used for Monte-Carlos trials. \n
 \t- instance: It is an integer that can take the values [1, 2, 3] to represent an instance number or any other integer to represent the home made instance that you can modify in the file `\$MiniPRIAD_HOME/src/Param.jl`. This argument control the type of electrical network used in the balckbox but does not chhange the number of constaint and does not affet the input length. \n
@@ -111,4 +114,6 @@ input: It is the blackbox input of 28, 15 or 13 dimentions, including integer (I
 \t- 13 dimention input: [I, R, I, R, I, R, I, R, I, R, I, R, R] \n
 The `x.txt` file must contains only the numerical value of each variable seperated with spaces without \"[\", \",\" or \"[\" \n
 For all integer input the recommanded bounds are 1 and 9 and for all reel input the recommanded bounds are 0.1 and 10.0 \n \n")
+print_rgb(255, 0, 0, "If you you received this message, it means that you did not specify the arguments correctly or that you did not respect the input format. \n\n")
+print_rgb(215, 215, 215, "\n")
 end

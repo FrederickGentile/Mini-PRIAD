@@ -38,8 +38,8 @@ function costOfUndeliveredEnergyCalculator(time::Float64, clientsList::Vector{Cl
             C9 += client.AnnualConsumption
         end
     end
-    C8 *= (time * 1000/(sum(nbVec[1:4]) * nbHoursInAYear ) * 0.125)
-    C9 *= (time * 1000/((nbVec[1] + 10 * (nbVec[1])^0.5) * nbHoursInAYear) * 5)
+    C8 *= (time * 1000/(sum(nbVec[1:4]) * nbHoursInAYear ) * 0.131)
+    C9 *= (time * 1000/((nbVec[1] + 10 * (nbVec[1])^0.5) * nbHoursInAYear) * 5.629)
     return [cost, C8, C9]
 end
 

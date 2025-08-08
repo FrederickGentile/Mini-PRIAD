@@ -27,4 +27,4 @@ loggingTime false
 # loggingTime ../result/loggingTime(2).txt
 # loggingTime ../result
 
-continueEval ../src/Main.jl basicContinueEval
+continueEval ../src/MiniPRIAD.jl basicContinueEval
