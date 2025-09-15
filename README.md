@@ -83,22 +83,42 @@ The `x.txt` file must contains only the numerical value of each variable seperat
 For all integer input the recommanded bounds are 1 and 9 and for all reel input the recommanded bounds are 0.1 and 10.0.
 
 ### Best objective function value found
-Here is the list of best know values for the three instances with a default seed of zero:
+Here is the list of best know values o fthe objectiv function for the three instances with a default seed of zero:
 ```
-	instance 1 with 13 dimentions input		36802252.400147244334
-	instance 1 with 15 dimentions input		77017271.171398505569
-	instance 1 with 28 dimentions input		70274902.081940218806
+	instance 1 with 13 dimentions input		4.20778673132001e7
+	instance 1 with 15 dimentions input		7.79802325983361e7
+	instance 1 with 28 dimentions input		6.847921255200684e7
 
-	instance 2 with 13 dimentions input		54491157.030907824636
-	instance 2 with 15 dimentions input		91242551.759370580316
-	instance 2 with 28 dimentions input		91242551.759370580316 *
+	instance 2 with 13 dimentions input		5.4629774672866955e7
+	instance 2 with 15 dimentions input		9.150163308358838e7
+	instance 2 with 28 dimentions input		8.887794290098089e7
 
-	instance 3 with 13 dimentions input	    (INFEAS) -> 1.825267114397739e8 with h = 0.7068619447772448
-	instance 3 with 15 dimentions input		2.981594980391101e8
-	instance 3 with 28 dimentions input		2.981594980391101e8 *
+	instance 3 with 13 dimentions input	    1.848977266191032e8
+	instance 3 with 15 dimentions input		3.0263131066611975e8
+	instance 3 with 28 dimentions input		3.0263131066611975e8 * Update soon
 ```
 The point associated to the best value found is alway in the `best_known_x.txt` file, you will find this file in the `$MINI_PRIAD_HOME/Tests` directory.
+
+### Running time
+i : instance, l : input dimention's
+
+| Fidelity | 0.0001 | 0.001 | 0.01 | 0.1 | 1.0 |
+|---|---|---|---|---|---|
+| i = 1, l = 28 | 0.0089666 | 0.075328 | 0.71848 | 7.5145 | soon |
+| i = 1, l = 15 | 0.0061965 | 0.040191 | 0.37905 | 3.7892 | 37.615 |
+| i = 1, l = 13 | 0.0061497 | 0.051503 | 0.50469 | 5.3260 | 51.868 |
+| i = 2, l = 28 | soon | soon | soon | soon | soon |
+| i = 2, l = 15 | 0.0057119 | 0.038639 | 0.37197 | 3.7925 | 37.643 |
+| i = 2, l = 13 | 0.0060498 | 0.050997 | 0.49749 | 5.1318 | 48.552 |
+| i = 3, l = 28 | soon | soon | soon | soon | soon |
+| i = 3, l = 15 | 0.0055236 | 0.038890 | 0.37317 | 3.8083 | 37.651 |
+| i = 3, l = 13 | 0.0066620 | 0.049283 | 0.47318 | 4.9368 | 48.945 |
+
+
+
 ### Other tools
+> Note : theese tools are still in devlopment, they will be updated soon on GitHub.
+
 In the `$MINI_PRIAD_HOME/Benchmarking_Tools` directory you will find different file that you can execute to run NOMAD, an LHS or a random search on each instance for each input length. To run those file you can respectivly type the following lines for each type of search.
 #### For NOMAD:
 To use the folowing command, you need to have NOMAD on your computer and have the environment variable `NOMAD_HOME` that reprensent the directory where NOMAD is installed containing bin, src, etc. You can initialize it the same way you initialized the environment variable `MINI_PRIAD_HOME`.
@@ -107,11 +127,11 @@ julia $MINI_PRIAD_HOME/Benchmarking_Tools/Run_NOMAD.jl $NOMAD_HOME
 ```
 > Note: You could also give manualy the full path instead of giving the environment variable `NOMAD_HOME` itself.
 #### For latin hypercube sampling:
-To use the folowing command, you need to install the julia package "Surogates" (see the section `Installing julia package "Surogates"`).
+To use the folowing command, you need to install the julia package "Surrogates" (see the section `Installing julia package "Surrogates"`).
 ```
 julia $MINI_PRIAD_HOME/Benchmarking_Tools/Run_LHS.jl
 ```
-##### Installing julia package "Surogates"
+##### Installing julia package "Surrogates"
 To install the package or can run the following lines in your terminal:
 ```
 julia

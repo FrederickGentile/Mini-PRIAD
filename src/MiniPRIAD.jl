@@ -211,7 +211,7 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
     end
 #########################
 
-    if ϕ < 10^(-6)
+    if ϕ < 10^(-5)
         #uncomment the one you need
         #return FFC             # return a vector [count_eval, f, [C]]
         str = join(FFC, " ")
@@ -221,7 +221,7 @@ function MiniPRIAD(input::Union{Vector{Float64}, Vector{Int64}, String}, ϕ::Flo
     end
 
     timer = time() - clk
-    ϕVec = [10^(-6) for i in 1:10]
+    ϕVec = [10^(-5) for i in 1:10]
     if continueEval(ϕVec, FFC[2:11]) == false
         logTime(timer, loggingTime)
 
